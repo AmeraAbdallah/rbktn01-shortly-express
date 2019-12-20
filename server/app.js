@@ -17,17 +17,17 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 
 
-app.get('/', 
+app.get('/',
 (req, res) => {
   res.render('index');
 });
 
-app.get('/create', 
+app.get('/create',
 (req, res) => {
   res.render('index');
 });
 
-app.get('/links', 
+app.get('/links',
 (req, res, next) => {
   models.Links.getAll()
     .then(links => {
@@ -38,7 +38,7 @@ app.get('/links',
     });
 });
 
-app.post('/links', 
+app.post('/links',
 (req, res, next) => {
   var url = req.body.url;
   if (!models.Links.isValidUrl(url)) {
@@ -78,7 +78,30 @@ app.post('/links',
 // Write your authentication routes here
 /************************************************************/
 
+app.post('/signup', (req, res)=>{
+  models.Users.get({username: req.body.username }).then(result => {
+    if(!result ) {
+      models.Users.create(req.body);
+      res.redirect(308, '/');
+    } else {
+      res.redirect( '/signup');
+    }
+  }).catch(err=> console.log(err))
+});
 
+app.post('/login', (req, res)=>{
+  models.Users.get({username: req.body.username }).then(result => {
+    if(result ) {
+      if(models.Users.compare(req.body.password, result.password, result.salt)){
+        res.redirect(308, '/');
+      } else {
+        res.redirect(401, '/login');
+      }
+    } else {
+      res.redirect(401, '/login');
+    }
+  })
+});
 
 /************************************************************/
 // Handle the code parameter route last - if all other routes fail
