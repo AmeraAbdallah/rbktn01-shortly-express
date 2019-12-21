@@ -388,7 +388,6 @@ describe('', function() {
       it('sets a new cookie on the response when a session is initialized', function(done) {
         var requestWithoutCookie = httpMocks.createRequest();
         var response = httpMocks.createResponse();
-
         createSession(requestWithoutCookie, response, function() {
           var cookies = response.cookies;
           expect(cookies['shortlyid']).to.exist;
@@ -443,11 +442,9 @@ describe('', function() {
         db.query('INSERT INTO users (username) VALUES (?)', username, function(error, results) {
           if (error) { return done(error); }
           var userId = results.insertId;
-
           createSession(requestWithoutCookie, response, function() {
             var hash = requestWithoutCookie.session.hash;
             db.query('UPDATE sessions SET userId = ? WHERE hash = ?', [userId, hash], function(error, result) {
-
               var secondResponse = httpMocks.createResponse();
               var requestWithCookies = httpMocks.createRequest();
               requestWithCookies.cookies.shortlyid = hash;
@@ -480,7 +477,7 @@ describe('', function() {
     });
   });
 
-  xdescribe('Sessions and cookies', function() {
+  describe('Sessions and cookies', function() {
     var requestWithSession;
     var cookieJar;
 

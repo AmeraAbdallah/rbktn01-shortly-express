@@ -4,9 +4,13 @@ const utils = require('./lib/hashUtils');
 const partials = require('express-partials');
 const bodyParser = require('body-parser');
 const Auth = require('./middleware/auth');
+const CookieParser = require('./middleware/cookieParser');
+
 const models = require('./models');
 
 const app = express();
+
+
 
 app.set('views', `${__dirname}/views`);
 app.set('view engine', 'ejs');
@@ -15,7 +19,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
 
-
+// app.use(Auth())
+// app.use(CookieParser())
 
 app.get('/',
 (req, res) => {
@@ -89,7 +94,7 @@ app.post('/signup', (req, res)=>{
   }).catch(err=> console.log(err))
 });
 
-app.post('/login', (req, res)=>{
+app.post('/login',Auth , (req, res)=>{
   models.Users.get({username: req.body.username }).then(result => {
     if(result ) {
       if(models.Users.compare(req.body.password, result.password, result.salt)){
