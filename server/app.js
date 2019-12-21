@@ -4,7 +4,7 @@ const utils = require('./lib/hashUtils');
 const partials = require('express-partials');
 const bodyParser = require('body-parser');
 const Auth = require('./middleware/auth');
-const CookieParser = require('./middleware/cookieParser');
+const Cookie = require('./middleware/cookieParser');
 
 const models = require('./models');
 
@@ -19,8 +19,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
 
-// app.use(Auth())
-// app.use(CookieParser())
+// app.use(Auth.createSession);
+// app.use(Cookie.parseCookies);
 
 app.get('/',
 (req, res) => {
@@ -82,7 +82,6 @@ app.post('/links',
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
-
 app.post('/signup', (req, res)=>{
   models.Users.get({username: req.body.username }).then(result => {
     if(!result ) {
@@ -94,7 +93,7 @@ app.post('/signup', (req, res)=>{
   }).catch(err=> console.log(err))
 });
 
-app.post('/login',Auth , (req, res)=>{
+app.post('/login', (req, res)=>{
   models.Users.get({username: req.body.username }).then(result => {
     if(result ) {
       if(models.Users.compare(req.body.password, result.password, result.salt)){
